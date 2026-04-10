@@ -38,6 +38,15 @@ After finishing work — reviews recent git commits/diffs and syncs the backlog:
 - Flags TODO/FIXME/HACK from diffs
 - Highlights stale in-progress items
 
+### `/adx-convert <file1> [file2 ...]`
+
+Import tasks from any files (docs, notes, legacy TODOs) into the ADX backlog.
+
+- Extracts checkboxes, TODO/FIXME markers, and implicit task lists
+- Infers priority from keywords (critical → high, nice-to-have → low)
+- Deduplicates against existing backlog and ignored items
+- Preview before import
+
 ### `/adx-audit [scope]`
 
 Codebase health check. Scopes: `security`, `architecture`, `debt`, `performance`, `full`.
@@ -48,7 +57,16 @@ Codebase health check. Scopes: `security`, `architecture`, `debt`, `performance`
 
 ### `/adx-init`
 
-One-time project setup. Creates `.adx.json`, optionally `TODO.md`, and updates `CLAUDE.md` with conventions.
+One-time project setup. Creates `.adx.json`, `.adx-memory.json`, optionally `TODO.md`, and updates `CLAUDE.md` with conventions.
+
+## Memory (`.adx-memory.json`)
+
+Per-project file that tracks:
+- **`ignored`** — items the user has explicitly skipped (won't be proposed again)
+- **`suppressedPaths`** — files excluded from audits
+- **`lastSync`** — date of last `/adx-sync` run
+
+Created by `/adx-init`, updated automatically. Can be edited manually.
 
 ## TODO.md Format (when using local backend)
 
