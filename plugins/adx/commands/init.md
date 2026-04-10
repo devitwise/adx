@@ -60,9 +60,12 @@ If `$ARGUMENTS` contains "github" or "todo", use that choice directly. Otherwise
 
 ### If TODO.md:
 
-1. Check if `TODO.md` exists. If yes, ask user whether to overwrite or keep.
+1. Check if `TODO.md` exists. If yes, ask user: **overwrite / keep / migrate**
+   - `overwrite` → replace with empty template
+   - `keep` → leave as-is, just write `.adx.json`
+   - `migrate` → read existing TODO.md AND ask if there are other files to import (e.g. `musthave.md`, `BACKLOG.md`), then run the same extraction logic as `/adx:convert`: preserve full context, file refs, commit hashes, sub-steps — do NOT reduce items to one-liners. Write the enriched result back to TODO.md.
 
-2. Create `TODO.md`:
+2. If creating fresh, use template:
    ```markdown
    # TODO
 

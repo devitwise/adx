@@ -94,5 +94,7 @@ Do not create an issue if one with the same or very similar title already exists
 
 - Apply changes in order
 - Check for duplicates before adding anything
-- Keep descriptions concise
+- **Preserve full context** — never reduce a rich description to a vague one-liner. If the caller passes context (file paths, commit refs, sub-steps, "why"), include it in the item. A task stripped of context is worse than no task.
+- For TODO.md: write context inline after `—` dash, e.g. `- [ ] (high) Fix rate limit — in-memory per instance, replace with Redis. File: \`shared/ai/aiService.js\``
+- For GitHub: put full context in issue body
 - Report what you changed when done
