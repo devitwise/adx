@@ -1,0 +1,9 @@
+{
+  "name": "adx",
+  "description": "AI Development Experience - TODO.md management, code sync, and codebase auditing",
+  "version": "0.1.0",
+  "author": {
+    "name": "AGR"
+  },
+  "keywords": ["todo", "audit", "security", "architecture", "project-management"]
+}
