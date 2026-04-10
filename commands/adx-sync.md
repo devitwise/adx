@@ -11,6 +11,8 @@ Analyze recent work and synchronize the project backlog.
 
 Read `.adx.json` from project root. If it does not exist, tell the user to run `/adx-init` first and stop.
 
+Read `.adx-memory.json` if it exists. Extract `ignored` list (normalized, lowercase for matching) and `suppressedPaths`.
+
 ## Step 2: Gather Git Context
 
 Run these in parallel:
@@ -57,6 +59,8 @@ Compare git activity against backlog items:
 
 4. **Stale items**: Items in "In Progress" (or open issues) that no recent commit references — flag but do not auto-move.
 
+5. **Filter ignored**: Before presenting any proposal, remove items whose description fuzzy-matches any entry in `ignored`. Do not mention filtered items.
+
 ## Step 5: Present Changes
 
 Show the user a summary of proposed changes:
@@ -76,6 +80,8 @@ Possibly stale (in progress but no recent activity):
 ```
 
 ## Step 6: Apply Changes
+
+For any item the user explicitly skips: append its description to `ignored` in `.adx-memory.json` and update `lastSync` to today's date (YYYY-MM-DD).
 
 Dispatch the `backlog-writer` agent (via Task tool) with the confirmed changes. Pass:
 - The backend type (from `.adx.json`)

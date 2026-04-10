@@ -12,6 +12,8 @@ Read one or more files and extract actionable items into the ADX backlog.
 
 Read `.adx.json` from project root. If it does not exist, tell the user to run `/adx-init` first and stop.
 
+Read `.adx-memory.json` if it exists. Extract `ignored` list for deduplication.
+
 ## Step 2: Resolve Files
 
 Parse `$ARGUMENTS` as a space-separated list of file paths (may include globs).
@@ -44,7 +46,7 @@ For each file, extract actionable items. Look for:
 - Words like "nice to have", "optional", "low priority", "eventually", "maybe" → `(low)`
 - Everything else → normal priority
 
-**Deduplication:** Skip items that are already present in the current backlog (read TODO.md or list open issues first).
+**Deduplication:** Skip items that are already present in the current backlog (read TODO.md or list open issues first). Also skip items whose description fuzzy-matches any entry in `ignored` from `.adx-memory.json`.
 
 ## Step 4: Present Preview
 
@@ -65,6 +67,8 @@ Ask the user: **"Import these N items? [y/n/edit]"**
 - `y` → proceed
 - `n` → stop
 - `edit` → let user specify which items to skip or modify (ask follow-up)
+
+For each item explicitly skipped by the user: append its description to `ignored` in `.adx-memory.json` (create file if missing with `{ "ignored": [], "suppressedPaths": [], "lastSync": null }`).
 
 ## Step 5: Import
 

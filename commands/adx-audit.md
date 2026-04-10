@@ -18,7 +18,11 @@ Map `$ARGUMENTS` to audit areas:
 - `full` → all four areas
 - Empty / no argument → **delta mode**: audit only files changed since last audit
 
-## Step 2: Determine File Scope
+## Step 2: Load Memory
+
+Read `.adx-memory.json` if it exists. Extract `suppressedPaths` — these files will be excluded from all audit scopes.
+
+## Step 3: Determine File Scope
 
 ### Delta mode (no argument):
 
@@ -43,7 +47,7 @@ Audit all source files. Identify source directories:
 ls -d src/ apps/ lib/ 2>/dev/null
 ```
 
-## Step 3: Dispatch Auditors
+## Step 4: Dispatch Auditors
 
 Use the Task tool to dispatch the `auditor` agent.
 
@@ -59,10 +63,10 @@ Use the Task tool to dispatch the `auditor` agent.
 
 Each agent prompt must include:
 - The audit area
-- The file list (or "all source files in: [dirs]")
+- The file list (or "all source files in: [dirs]"), with `suppressedPaths` entries excluded
 - Instruction to return findings in High/Medium/Low format
 
-## Step 4: Aggregate Results
+## Step 5: Aggregate Results
 
 Collect findings from all agents. Combine into a single report organized by:
 1. Summary (counts per severity per area)
@@ -70,7 +74,7 @@ Collect findings from all agents. Combine into a single report organized by:
 3. Medium findings (all areas)
 4. Low findings (all areas)
 
-## Step 5: Write Report
+## Step 6: Write Report
 
 Create directory if needed:
 ```bash
@@ -107,7 +111,7 @@ Write `docs/adx-audit-YYYY-MM-DD.md`:
 [findings]
 ```
 
-## Step 6: Update Backlog
+## Step 7: Update Backlog
 
 Read `.adx.json` to determine backend.
 
@@ -117,7 +121,7 @@ Dispatch `backlog-writer` agent with High and Medium findings:
 - Low findings → do NOT add to backlog
 - Skip if an equivalent item already exists
 
-## Step 7: Report to User
+## Step 8: Report to User
 
 Summarize:
 - Findings count per severity

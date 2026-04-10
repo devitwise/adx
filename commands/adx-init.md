@@ -104,6 +104,18 @@ If backend is TODO.md, also add:
 - Done items: `- [x] (YYYY-MM-DD) description` — append-only
 ```
 
-## Step 4: Confirm
+## Step 4: Initialize Memory
 
-Tell the user what was set up. Mention available commands: `/adx-sync`, `/adx-audit`.
+Check if `.adx-memory.json` exists. If not, create it:
+
+```json
+{
+  "ignored": [],
+  "suppressedPaths": [],
+  "lastSync": null
+}
+```
+
+## Step 5: Confirm
+
+Tell the user what was set up. Mention available commands: `/adx-sync`, `/adx-audit`, `/adx-convert`.
