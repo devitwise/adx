@@ -1,0 +1,16 @@
+{
+  "name": "adx",
+  "owner": {
+    "name": "AGR"
+  },
+  "metadata": {
+    "description": "AI Development Experience — backlog management and codebase auditing"
+  },
+  "plugins": [
+    {
+      "name": "adx",
+      "source": "./plugins/adx",
+      "description": "Project backlog management (GitHub Project / TODO.md) and codebase auditing"
+    }
+  ]
+}
