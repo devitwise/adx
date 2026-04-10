@@ -1,5 +1,6 @@
 ---
 name: backlog-writer
+color: green
 description: |
   Use this agent when the project backlog needs to be updated. Supports two backends: GitHub Project (issues) or TODO.md (local file). Reads `.adx.json` to determine which backend to use.
 

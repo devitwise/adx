@@ -1,5 +1,6 @@
 ---
 name: auditor
+color: red
 description: |
   Use this agent when performing a codebase audit for security, architecture, debt, or performance issues. Runs focused analysis on a specific audit area and returns structured findings.
 
