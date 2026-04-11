@@ -8,7 +8,23 @@ allowed-tools: ["Read", "Glob", "Grep", "Bash", "Write", "Edit", "Task"]
 
 Run focused or full codebase audit. Generates a report and adds findings to the project backlog.
 
-## Step 1: Parse Scope
+## Step 1: Load and Validate Config
+
+1. If `.adx.json` does not exist in project root → tell user: "No ADX config found. Run `/adx:init` to set up." and **stop**.
+
+2. Read `.adx.json`. Validate:
+   - `backend` must be `"github"` or `"todo"`
+   - If `"github"`: must have `github.owner` (non-empty string) and `github.projectNumber` (positive integer)
+   - If invalid → report the specific problem, suggest re-running `/adx:init`, and **stop**.
+
+3. Read `.adx-memory.json`:
+   - If missing or unparseable JSON → recreate with defaults and warn user:
+     `{ "ignored": [], "suppressedPaths": [], "lastSync": null, "lastId": 0 }`
+   - If exists but missing fields → add missing fields with defaults (don't overwrite valid fields)
+
+4. Extract `suppressedPaths` — these are glob patterns relative to project root, excluded from all audit scopes.
+
+## Step 2: Parse Scope
 
 Map `$ARGUMENTS` to audit areas:
 - `security` → security only
@@ -17,10 +33,6 @@ Map `$ARGUMENTS` to audit areas:
 - `performance` → performance only
 - `full` → all four areas
 - Empty / no argument → **delta mode**: audit only files changed since last audit
-
-## Step 2: Load Memory
-
-Read `.adx-memory.json` if it exists. Extract `suppressedPaths` — these files will be excluded from all audit scopes.
 
 ## Step 3: Determine File Scope
 
@@ -31,12 +43,17 @@ Find the most recent audit report:
 ls -1 docs/adx-audit-*.md 2>/dev/null | sort | tail -1
 ```
 
-If found, extract date from filename and get changed files since then:
+If found, validate the filename:
+- Strip the `adx-audit-` prefix and `.md` suffix, then take the first 10 characters — that is always the date portion (e.g. `adx-audit-2026-04-10-1430.md` → take chars 10–19 → `2026-04-10`)
+- Verify the extracted 10-char string matches YYYY-MM-DD with a valid month (01–12) and day (01–31)
+- If the date is invalid or filename doesn't match the expected pattern → warn and treat as `full` audit
+
+If date is valid, get changed files since then:
 ```bash
 git log --since="YYYY-MM-DD" --name-only --pretty=format:"" | sort -u | grep -v '^$'
 ```
 
-If no previous audit exists, treat as `full`.
+If no previous audit report exists, treat as `full`.
 
 If no files changed since last audit, report "Nothing to audit" and stop.
 
@@ -81,10 +98,13 @@ Create directory if needed:
 mkdir -p docs
 ```
 
-Write `docs/adx-audit-YYYY-MM-DD.md`:
+Write `docs/adx-audit-YYYY-MM-DD-HHmm.md` (e.g. `adx-audit-2026-04-10-1430.md`). Get the timestamp:
+```bash
+date +"%Y-%m-%d-%H%M"
+```
 
 ```markdown
-# ADX Audit Report — YYYY-MM-DD
+# ADX Audit Report — YYYY-MM-DD-HHmm
 
 **Scope:** [full / security / delta (N files)]
 **Files audited:** N
@@ -113,13 +133,12 @@ Write `docs/adx-audit-YYYY-MM-DD.md`:
 
 ## Step 7: Update Backlog
 
-Read `.adx.json` to determine backend.
-
-Dispatch `backlog-writer` agent with High and Medium findings:
+Using config loaded in Step 1, dispatch `backlog-writer` agent with High and Medium findings:
+- Include `file:line` in each finding description for dedup
+- Dedup key: `[audit] file:line` — two findings at same `file:line` are duplicates even if titles differ
 - High findings → `(high)` priority, prefixed with `[audit]`
 - Medium findings → normal priority, prefixed with `[audit]`
 - Low findings → do NOT add to backlog
-- Skip if an equivalent item already exists
 
 ## Step 8: Report to User
 

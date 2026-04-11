@@ -8,11 +8,21 @@ allowed-tools: ["Read", "Glob", "Grep", "Bash", "Write", "Edit", "Task", "AskUse
 
 Read one or more files and extract actionable items into the ADX backlog.
 
-## Step 1: Load Config
+## Step 1: Load and Validate Config
 
-Read `.adx.json` from project root. If it does not exist, tell the user to run `/adx-init` first and stop.
+1. If `.adx.json` does not exist in project root → tell user: "No ADX config found. Run `/adx:init` to set up." and **stop**.
 
-Read `.adx-memory.json` if it exists. Extract `ignored` list for deduplication.
+2. Read `.adx.json`. Validate:
+   - `backend` must be `"github"` or `"todo"`
+   - If `"github"`: must have `github.owner` (non-empty string) and `github.projectNumber` (positive integer)
+   - If invalid → report the specific problem, suggest re-running `/adx:init`, and **stop**.
+
+3. Read `.adx-memory.json`:
+   - If missing or unparseable JSON → recreate with defaults and warn user:
+     `{ "ignored": [], "suppressedPaths": [], "lastSync": null, "lastId": 0 }`
+   - If exists but missing fields → add missing fields with defaults (don't overwrite valid fields)
+
+4. Extract `ignored` list for deduplication.
 
 ## Step 2: Resolve Files
 
@@ -41,10 +51,20 @@ For each file, extract actionable items. Look for:
 - Paragraphs describing missing features, broken behavior, or needed improvements
 - Any numbered or bulleted list inside those sections
 
-**Priority inference:**
-- Words like "critical", "urgent", "blocker", "must", "security", "ASAP" → `(high)`
-- Words like "nice to have", "optional", "low priority", "eventually", "maybe" → `(low)`
-- Everything else → normal priority
+**Do NOT extract from:**
+- Changelog sections about past/resolved issues (e.g. "Fixed in v2.1", items under a version heading)
+- Historical narratives ("We used to have...", "Previously this caused...")
+- Example/sample content that illustrates a concept but is not a real task
+- Only extract forward-looking, actionable items that still need to be done
+
+**Priority inference (case-insensitive):**
+
+High keywords: `critical`, `urgent`, `blocker`, `must`, `security`, `asap`, `breaking`, `crash`, `data loss`, `vulnerability`
+Low keywords: `nice to have`, `optional`, `low priority`, `eventually`, `maybe`, `someday`, `cosmetic`, `minor`
+
+**Negation check:** If a priority keyword appears in the same sentence after a negation word (`not`, `no`, `isn't`, `don't`, `won't`, `doesn't`, `shouldn't`), skip that keyword. Example: "This is not critical" → normal priority, not high.
+
+Everything else → normal priority
 
 **Context preservation — this is critical:**
 
@@ -90,7 +110,7 @@ Ask the user: **"Import these N items? [y/n/edit]"**
 - `n` → stop
 - `edit` → let user specify which items to skip or modify (ask follow-up)
 
-For each item explicitly skipped by the user: append its description to `ignored` in `.adx-memory.json` (create file if missing with `{ "ignored": [], "suppressedPaths": [], "lastSync": null }`).
+For each item explicitly skipped by the user: append its description to `ignored` in `.adx-memory.json` (create file if missing with `{ "ignored": [], "suppressedPaths": [], "lastSync": null, "lastId": 0 }` — note: `/adx:init` should have created this file; if it's missing, something went wrong).
 
 ## Step 5: Import
 

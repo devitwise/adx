@@ -63,7 +63,7 @@ If `$ARGUMENTS` contains "github" or "todo", use that choice directly. Otherwise
 1. Check if `TODO.md` exists. If yes, ask user: **overwrite / keep / migrate**
    - `overwrite` → replace with empty template
    - `keep` → leave as-is, just write `.adx.json`
-   - `migrate` → read existing TODO.md AND ask if there are other files to import (e.g. `musthave.md`, `BACKLOG.md`), then run the same extraction logic as `/adx:convert`: preserve full context, file refs, commit hashes, sub-steps — do NOT reduce items to one-liners. Write the enriched result back to TODO.md.
+   - `migrate` → read existing TODO.md AND ask if there are other files to import (e.g. `musthave.md`, `BACKLOG.md`), then run the same extraction logic as `/adx:convert`: preserve full context, file refs, commit hashes, sub-steps — do NOT reduce items to one-liners. Write the enriched result back to TODO.md. After migration, assign ADX IDs to all migrated items: read `.adx-memory.json`, increment `lastId` for each item, write `ADX-nnn:` prefix into each TODO.md item, then update `lastId` in `.adx-memory.json`.
 
 2. If creating fresh, use template:
    ```markdown
@@ -92,12 +92,15 @@ Otherwise append:
 ```markdown
 ## ADX Conventions
 
-Project backlog managed by ADX plugin (`/adx-sync`, `/adx-audit`).
+Project backlog managed by ADX plugin (`/adx:sync`, `/adx:audit`).
 
 - Backend configured in `.adx.json`
-- Use `/adx-sync` after finishing work to sync backlog with git state
-- Use `/adx-audit [scope]` for codebase health checks (security, architecture, debt, performance)
-- Audit reports saved to `docs/adx-audit-YYYY-MM-DD.md`
+- Each backlog item has a stable ID: `ADX-001`, `ADX-002`, etc.
+- Reference in commits: `[ADX-001] Fix rate limit` for automatic sync matching
+- IDs are auto-assigned by backlog-writer — never reuse a retired ID
+- Use `/adx:sync` after finishing work to sync backlog with git state
+- Use `/adx:audit [scope]` for codebase health checks (security, architecture, debt, performance)
+- Audit reports saved to `docs/adx-audit-YYYY-MM-DD-HHmm.md`
 ```
 
 If backend is TODO.md, also add:
@@ -115,10 +118,30 @@ Check if `.adx-memory.json` exists. If not, create it:
 {
   "ignored": [],
   "suppressedPaths": [],
-  "lastSync": null
+  "lastSync": null,
+  "lastId": 0
 }
 ```
 
-## Step 5: Confirm
+Note: `suppressedPaths` accepts glob patterns relative to project root (e.g. `"dist/**"`, `"*.generated.ts"`, `"vendor/**"`). They exclude matching files from all audits.
 
-Tell the user what was set up. Mention available commands: `/adx-sync`, `/adx-audit`, `/adx-convert`.
+## Step 5: Offer Post-Commit Hook (optional)
+
+Ask the user: "Want a post-commit reminder when backlog sync is stale? [y/n]"
+
+If yes, append to `.git/hooks/post-commit` (create if missing, make executable with `chmod +x`):
+
+```sh
+#!/bin/sh
+LAST_SYNC=$(cat .adx-memory.json 2>/dev/null | grep -o '"lastSync":"[^"]*"' | cut -d'"' -f4)
+if [ -n "$LAST_SYNC" ] && [ "$LAST_SYNC" != "null" ]; then
+  DAYS_AGO=$(( ($(date +%s) - $(date -d "$LAST_SYNC" +%s 2>/dev/null || echo 0)) / 86400 ))
+  if [ "$DAYS_AGO" -ge 3 ]; then
+    echo "ADX: Last sync was $DAYS_AGO days ago. Run /adx:sync to update backlog."
+  fi
+fi
+```
+
+## Step 6: Confirm
+
+Tell the user what was set up. Mention available commands: `/adx:sync`, `/adx:audit`, `/adx:convert`.
