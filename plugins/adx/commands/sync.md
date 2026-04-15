@@ -86,6 +86,10 @@ Compare git activity against backlog items:
 
 5. **Filter ignored**: Remove items whose ADX ID exactly matches any ID entry in `ignored` (e.g. `"ADX-042"`). For legacy entries (non-ID strings in `ignored`), fall back to case-insensitive substring matching against item descriptions. Do not mention filtered items.
 
+**Priority handling:**
+- For matched existing backlog items: **preserve the item's current priority** — sync never mutates priority on existing items regardless of what the commit message says.
+- For new untracked work (no backlog item): propose with `(normal)` priority. The user may adjust before confirming.
+
 ## Step 5: Present Changes
 
 Show the user a summary of proposed changes:
@@ -98,7 +102,7 @@ New items for Done (already done, not tracked):
   - "Add reCAPTCHA middleware" — commits def5678..ghi9012
 
 New items for Backlog:
-  - "TODO: refactor email pipeline" — found in src/email/sync.js:45
+  - (normal) "TODO: refactor email pipeline" — found in src/email/sync.js:45
 
 Possibly stale (in progress but no recent activity):
   - "Split CrmEntityPage" — no commits in last 15
