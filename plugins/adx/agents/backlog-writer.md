@@ -86,9 +86,12 @@ If any `gh` command fails:
 - On failure: stop processing remaining items and report partial progress (what was done, what failed)
 
 **Priority mapping:**
+- `(critical)` → add label `priority:critical`
 - `(high)` → add label `priority:high`
+- `(normal)` → add label `priority:normal`
 - `(low)` → add label `priority:low`
-- normal → no extra label
+
+**Priority validation:** If the caller passes a priority tag not in the list above, fall back to `(normal)` and include this warning in the output: `Warning: unrecognized priority tag '<value>' — defaulted to (normal).`
 
 ---
 
@@ -98,8 +101,8 @@ If any `gh` command fails:
 
 - Three sections: `## Backlog`, `## In Progress`, `## Done`
 - Each item is a checkbox: `- [ ] description` or `- [x] description`
-- Priority inline: `- [ ] (high) description` or `- [ ] (low) description`
-- Done items include date after ID: `- [x] ADX-042: (YYYY-MM-DD) description`
+- Priority inline (always explicit, one required): `- [ ] (critical) description`, `- [ ] (high) description`, `- [ ] (normal) description`, `- [ ] (low) description`
+- Done items: priority tag comes first, then date: `- [x] ADX-042: (high) (YYYY-MM-DD) description`
 - Items may have sub-bullets for context (indented with 2 spaces)
 - Never remove items from Done section — it is append-only history
 
