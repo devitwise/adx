@@ -42,9 +42,11 @@ If `$ARGUMENTS` contains "github" or "todo", use that choice directly. Otherwise
 
 6. Ensure labels exist:
    ```bash
-   gh label create "adx" --description "Managed by ADX plugin" --color "0E8A16" 2>/dev/null || true
-   gh label create "priority:high" --color "D93F0B" 2>/dev/null || true
-   gh label create "priority:low" --color "C2E0C6" 2>/dev/null || true
+   gh label create "adx"              --description "Managed by ADX plugin" --color "0E8A16" 2>/dev/null || true
+   gh label create "priority:critical" --color "B60205" 2>/dev/null || true
+   gh label create "priority:high"     --color "D93F0B" 2>/dev/null || true
+   gh label create "priority:normal"   --color "AAAAAA" 2>/dev/null || true
+   gh label create "priority:low"      --color "C2E0C6" 2>/dev/null || true
    ```
 
 7. Write `.adx.json`:
@@ -106,7 +108,7 @@ Project backlog managed by ADX plugin (`/adx:sync`, `/adx:audit`).
 If backend is TODO.md, also add:
 ```markdown
 - TODO.md format: `## Backlog` / `## In Progress` / `## Done` with checkboxes
-- Priority inline: `(high)`, `(low)` — no tag means normal
+- Priority inline: `(critical)`, `(high)`, `(normal)`, `(low)` — all explicit, one required per item
 - Done items: `- [x] (YYYY-MM-DD) description` — append-only
 ```
 
