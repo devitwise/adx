@@ -59,7 +59,8 @@ For each file, extract actionable items. Look for:
 
 **Priority inference (case-insensitive):**
 
-High keywords: `critical`, `urgent`, `blocker`, `must`, `security`, `asap`, `breaking`, `crash`, `data loss`, `vulnerability`
+Critical keywords: `production down`, `data loss`, `breach`, `CVE`, `blocker`, `hotfix`, `critical`
+High keywords: `urgent`, `must`, `security`, `asap`, `breaking`, `crash`, `vulnerability`
 Low keywords: `nice to have`, `optional`, `low priority`, `eventually`, `maybe`, `someday`, `cosmetic`, `minor`
 
 **Negation check:** If a priority keyword appears in the same sentence after a negation word (`not`, `no`, `isn't`, `don't`, `won't`, `doesn't`, `shouldn't`), skip that keyword. Example: "This is not critical" → normal priority, not high.
@@ -77,7 +78,10 @@ Each extracted item must carry its full context, not just the title. Include:
 
 Format for TODO.md backend:
 ```
+- [ ] (critical) Short title — key detail about what/why. File: `path/to/file.ts`.
 - [ ] (high) Short title — key detail about what/why. File: `path/to/file.ts`. Sub-steps: fetch → classify → assign.
+- [ ] (normal) Short title — key detail about what/why.
+- [ ] (low) Short title — nice to have detail.
 ```
 
 For GitHub backend: put the full context in the issue body, keep the title concise.
