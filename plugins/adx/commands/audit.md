@@ -81,15 +81,16 @@ Use the Task tool to dispatch the `auditor` agent.
 Each agent prompt must include:
 - The audit area
 - The file list (or "all source files in: [dirs]"), with `suppressedPaths` entries excluded
-- Instruction to return findings in High/Medium/Low format
+- Instruction to return findings in Critical/High/Medium/Low format
 
 ## Step 5: Aggregate Results
 
 Collect findings from all agents. Combine into a single report organized by:
 1. Summary (counts per severity per area)
-2. High findings (all areas)
-3. Medium findings (all areas)
-4. Low findings (all areas)
+2. Critical findings (all areas)
+3. High findings (all areas)
+4. Medium findings (all areas)
+5. Low findings (all areas)
 
 ## Step 6: Write Report
 
@@ -111,12 +112,16 @@ date +"%Y-%m-%d-%H%M"
 
 ## Summary
 
-| Area | High | Medium | Low |
-|------|------|--------|-----|
-| Security | N | N | N |
-| Architecture | N | N | N |
-| Debt | N | N | N |
-| Performance | N | N | N |
+| Area | Critical | High | Medium | Low |
+|------|----------|------|--------|-----|
+| Security | N | N | N | N |
+| Architecture | N | N | N | N |
+| Debt | N | N | N | N |
+| Performance | N | N | N | N |
+
+## Critical
+
+[findings]
 
 ## High Priority
 
@@ -133,11 +138,12 @@ date +"%Y-%m-%d-%H%M"
 
 ## Step 7: Update Backlog
 
-Using config loaded in Step 1, dispatch `backlog-writer` agent with High and Medium findings:
+Using config loaded in Step 1, dispatch `backlog-writer` agent with Critical, High, and Medium findings:
 - Include `file:line` in each finding description for dedup
 - Dedup key: `[audit] file:line` — two findings at same `file:line` are duplicates even if titles differ
+- Critical findings → `(critical)` priority, prefixed with `[audit]`
 - High findings → `(high)` priority, prefixed with `[audit]`
-- Medium findings → normal priority, prefixed with `[audit]`
+- Medium findings → `(normal)` priority, prefixed with `[audit]`
 - Low findings → do NOT add to backlog
 
 ## Step 8: Report to User
