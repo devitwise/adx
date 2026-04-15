@@ -74,6 +74,9 @@ Return findings organized by severity. Each finding MUST include:
 ```markdown
 ### [Area] Findings
 
+#### Critical
+- **[title]**: [description] -- [file:line]
+
 #### High
 - **[title]**: [description] -- [file:line]
 
@@ -90,4 +93,5 @@ Return findings organized by severity. Each finding MUST include:
 - Do not flag pre-existing patterns that work correctly as issues.
 - Focus on the specified area only — do not cross into other audit areas.
 - If auditing a subset of files (delta mode), only report issues in those files.
-- When in doubt, classify as Medium rather than High.
+- **Critical** = hardcoded secrets, active injection vectors (confirmed SQL/XSS with no sanitization), data loss risk, known CVE present in dependency. Use sparingly.
+- When in doubt, classify as Medium rather than High or Critical.
