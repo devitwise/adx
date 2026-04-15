@@ -102,7 +102,7 @@ From: path/to/file.md
          risk, hard to unit-test. resolveQueueItem already extracted (6482556).
          
          Refactor email sync into stages: fetch → classify → assign → route → mark.
-         Per-thread isolation done (6fe61eb). Low priority.
+         Per-thread isolation done (6fe61eb).
    (low) Add dark mode toggle
 ```
 

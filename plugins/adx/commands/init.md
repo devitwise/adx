@@ -109,7 +109,7 @@ If backend is TODO.md, also add:
 ```markdown
 - TODO.md format: `## Backlog` / `## In Progress` / `## Done` with checkboxes
 - Priority inline: `(critical)`, `(high)`, `(normal)`, `(low)` — all explicit, one required per item
-- Done items: `- [x] (YYYY-MM-DD) description` — append-only
+- Done items: `- [x] ADX-042: (high) (YYYY-MM-DD) description` — priority tag before date, append-only
 ```
 
 ## Step 4: Initialize Memory
